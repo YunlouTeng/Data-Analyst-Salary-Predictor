@@ -5,220 +5,113 @@ Created on Fri Dec 30 12:08:55 2022
 
 @author: lavine
 """
-import time
-# 3rd-party libraries
-from urllib.request import urlopen, Request
-from urllib.parse import urlparse
-from bs4 import BeautifulSoup as soup
-
+import os
+import glob
 import pandas as pd
-from selenium import webdriver
-import csv
-
-#Initializing the webdriver
-path = '/Users/lavine/Documents/Terriers!/github/ds_salary/src/chromedriver'
-#driver = webdriver.Chrome(path)
+#web scraping
+from web_scraper import extract_listing
 
 
-data = pd.read_excel('/Users/lavine/Documents/Terriers!/github/ds_salary/src/Data analyst Jobs in Boston, MA, December 2022 _ Glassdoor.xlsx')
-
-data2 = data.drop_duplicates(subset='joblink_URL')
-
-URL_list = data2['joblink_URL'][:2]
-
-# checks and corrects the scheme of the requested url
-def checkURL(requested_url):
-    if not urlparse(requested_url).scheme:
-        requested_url = "https://" + requested_url
-    return requested_url
 
 
-# fetches data from requested url and parses it through beautifulsoup
-def requestAndParse(requested_url):
-    requested_url = checkURL(requested_url)
-    try:
-        # define headers to be provided for request authentication
-        headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) ' 
-                        'AppleWebKit/537.11 (KHTML, like Gecko) '
-                        'Chrome/23.0.1271.64 Safari/537.11',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-            'Accept-Encoding': 'none',
-            'Accept-Language': 'en-US,en;q=0.8',
-            'Connection': 'keep-alive'}
-        request_obj = Request(url = requested_url, headers = headers)
-        opened_url = urlopen(request_obj)
-        page_html = opened_url.read()
-        opened_url.close()
-        page_soup = soup(page_html, "html.parser")
-        return page_soup, requested_url
+######import all the data analyst job information######
+da_file_path = 'URLs/Data_Analyst'
+da_csv_files = glob.glob(os.path.join(da_file_path, "*.csv"))
 
-    except Exception as e:
-        print(e)
-        
-# extracts desired data from listing banner
-def extract_listingBanner(listing_soup):
-    listing_bannerGroup_valid = False
-
-    try:
-        listing_bannerGroup = listing_soup.find("div", class_="css-ur1szg e11nt52q0")
-        listing_bannerGroup_valid = True
-    except:
-        print("[ERROR] Error occurred in function extract_listingBanner")
-        companyName = "NA"
-        company_starRating = "NA"
-        company_offeredRole = "NA"
-        company_roleLocation = "NA"
+  
+# loop over the list of csv files
+for f in da_csv_files:
+    # read the csv file
+    da_df = pd.read_csv(f)
     
-    if listing_bannerGroup_valid:
-        try:
-            company_starRating = listing_bannerGroup.find("span", class_="css-1pmc6te e11nt52q4").getText()
-        except:
-            company_starRating = "NA"
-        if company_starRating != "NA":
-            try:
-                companyName = listing_bannerGroup.find("div", class_="css-16nw49e e11nt52q1").getText().replace(company_starRating,'')
-            except:
-                companyName = "NA"
-            # company_starRating.replace("★", "")
-            company_starRating = company_starRating[:-1]
-        else:
-            try:
-                companyName = listing_bannerGroup.find("div", class_="css-16nw49e e11nt52q1").getText()
-            except:
-                companyName = "NA"
-            
-        try:
-            company_offeredRole = listing_bannerGroup.find("div", class_="css-17x2pwl e11nt52q6").getText()
-        except:
-            company_offeredRole = "NA"
 
-        try:
-            company_roleLocation = listing_bannerGroup.find("div", class_="css-1v5elnn e11nt52q2").getText()
-        except:
-            company_roleLocation = "NA"
+######import all the data scientist job information######
+ds_file_path = 'URLs/Data_scientist'
+ds_csv_files = glob.glob(os.path.join(ds_file_path, "*.csv"))
 
-    return companyName, company_starRating, company_offeredRole, company_roleLocation
+  
+# loop over the list of csv files
+for f in ds_csv_files:
+    # read the csv file
+    ds_df = pd.read_csv(f)
 
 
-        
-# extracts desired data from listing description
-def extract_listingDesc(listing_soup):
-    extract_listingDesc_tmpList = []
-    listing_jobDesc_raw = None
+######import all the business intelligence analyst job information######
+bia_file_path = 'URLs/Business_Intelligence_Analyst'
+bia_csv_files = glob.glob(os.path.join(bia_file_path, "*.csv"))
 
-    try:
-        listing_jobDesc_raw = listing_soup.find("div", id="JobDescriptionContainer")
-        if type(listing_jobDesc_raw) != type(None):
-            JobDescriptionContainer_found = True
-        else:
-            JobDescriptionContainer_found = False
-            listing_jobDesc = "NA"
-    except Exception as e:
-        print("[ERROR] {} in extract_listingDesc".format(e))
-        JobDescriptionContainer_found = False
-        listing_jobDesc = "NA"
-
-    if JobDescriptionContainer_found:
-        jobDesc_items = listing_jobDesc_raw.findAll('li')
-        for jobDesc_item in jobDesc_items:
-            extract_listingDesc_tmpList.append(jobDesc_item.text)
-
-        listing_jobDesc = " ".join(extract_listingDesc_tmpList)
-
-        if len(listing_jobDesc) <= 10:
-            listing_jobDesc = listing_jobDesc_raw.getText()
-
-    return listing_jobDesc
+  
+# loop over the list of csv files
+for f in bia_csv_files:
+    # read the csv file
+    bia_df = pd.read_csv(f)
 
 
+#drop duplicates
+da_df2 = da_df.drop_duplicates(subset='joburl')
+ds_df2 = ds_df.drop_duplicates(subset='joburl')
+bia_df2 = bia_df.drop_duplicates(subset='joburl')
 
-# extract data from listing
-def extract_listing(url):
-    request_success = False
-    selenium_success = False
+
+#creating dataframes
+data_analyst = []
+data_scientist = []
+business_intelligence_analyst = []
+
+for joblink in da_df2['joburl']:
+    data_analyst.append(extract_listing(joblink))
+
+for joblink in ds_df2['joburl']:
+    data_scientist.append(extract_listing(joblink))
     
-    #listing_soup, requested_url = requestAndParse(url)
-    options = webdriver.ChromeOptions()
-    options.add_argument('headless')
-    driver = webdriver.Chrome(executable_path=path, options=options)
-    
-    try:
-        listing_soup, requested_url = requestAndParse(url)
-        request_success = True
-    except Exception as e:
-        print("[ERROR] Error occurred in extract_listing, requested url: {} is unavailable.".format(url))
-        return ("NA", "NA", "NA", "NA", "NA", "NA")
-    
-    # use selenium to scrape company information
-    try:
-        driver.get(requested_url)
-        company_buttom = driver.find_element_by_xpath('//div[@data-tab-type="overview"]')
-        company_buttom.click()
-        selenium_success = True
-        
-    except Exception as e:
-        print("[ERROR] Error occurred in company information extracting, requested url: {} is unavailable.".format(url))
-        year_founded = 'NA'
-        company_size = 'NA'
-        company_industry = 'NA'
-        company_type = 'NA'
-        company_sector = 'NA'
-        company_revenue = 'NA'
-        
-    if selenium_success:
-        #get year_founded
-        try:
-            year_founded = driver.find_element_by_id('yearFounded').text
-        except:
-            year_founded = 'NA'
-        
-        #get company size
-        try:
-            company_size = driver.find_element_by_id('size').text
-        except:
-            company_size = 'NA'
-        
-        #get industry
-        try:
-            company_industry = driver.find_element_by_id('primaryIndustry.industryName').text
-        except:
-            company_industry = 'NA'
-        
-        #get company_type
-        try:
-            company_type = driver.find_element_by_id('type').text
-        except:
-            company_type = 'NA'
-        
-        #get company_sector
-        try:
-            company_sector = driver.find_element_by_id('primaryIndustry.sectorName').text
-        except:
-            company_sector = 'NA'
-        
-        #get company_revenue
-        try:
-            company_revenue = driver.find_element_by_id('revenue').text
-        except:
-            company_revenue = 'NA'
-        
-        driver.quit()
-    if request_success:
-        companyName, company_starRating,company_offeredRole, company_roleLocation = extract_listingBanner(listing_soup)
-        listing_jobDesc = extract_listingDesc(listing_soup)
+for joblink in bia_df2['joburl']:
+    business_intelligence_analyst.append(extract_listing(joblink))
 
-    return (companyName, company_starRating,company_offeredRole, company_roleLocation, listing_jobDesc, requested_url, year_founded, company_size, company_industry, company_type, company_sector, company_revenue)
+
+df_data_analyst = pd.DataFrame(data_analyst,
+                               columns = ['CompanyName','company_starRating','CompanyOfferedRole','CompanyRoleLocation','ListingJobDesc','RequestedUrl','YearFounded','CompanySize','CompanyIndustry','CompanyType','CompanySector','CompanyRevenue'])
+
+df_data_scientist = pd.DataFrame(data_scientist,
+                               columns = ['CompanyName','company_starRating','CompanyOfferedRole','CompanyRoleLocation','ListingJobDesc','RequestedUrl','YearFounded','CompanySize','CompanyIndustry','CompanyType','CompanySector','CompanyRevenue'])
+
+df_business_intelligence_analyst = pd.DataFrame(business_intelligence_analyst,
+                               columns = ['CompanyName','company_starRating','CompanyOfferedRole','CompanyRoleLocation','ListingJobDesc','RequestedUrl','YearFounded','CompanySize','CompanyIndustry','CompanyType','CompanySector','CompanyRevenue'])
 
 
 
-my_data = []
-
-for aaa in URL_list:
-    my_data.append(extract_listing(aaa))
 
 
-dff = pd.DataFrame(my_data,columns = ['CompanyName','company_starRating','CompanyOfferedRole','CompanyRoleLocation','ListingJobDesc','RequestedUrl','YearFounded','CompanySize','CompanyIndustry','CompanyType','CompanySector','CompanyRevenue'])
 dff.to_csv('/Users/lavine/Documents/Terriers!/github/ds_salary/src/file2.csv', index=False)
-#columns = ['CompanyName','CompanyOfferedRole','CompanyRoleLocation','ListingJobDesc','RequestedUrl','YearFounded','CompanySize','CompanyIndustry','CompanyType','CompanySector','CompanyRevenue'])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
