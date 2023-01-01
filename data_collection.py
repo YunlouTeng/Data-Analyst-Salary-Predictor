@@ -33,8 +33,6 @@ print(da_df2.shape)
 print(ds_df2.shape)
 print(bia_df2.shape)
 
-
-
 #web scraping
 data_analyst = []
 data_scientist = []
@@ -60,18 +58,15 @@ df_business_intelligence_analyst = pd.DataFrame(business_intelligence_analyst,
                                columns = ['CompanyName','company_starRating','CompanyOfferedRole','CompanyRoleLocation','ListingJobDesc','RequestedUrl','YearFounded','CompanySize','CompanyIndustry','CompanyType','CompanySector','CompanyRevenue'])
 
 
-
 #add est. salary
-df_data_analyst = df_data_analyst.merge(da_df2, how ='left', left_on = 'RequestedUrl',right_on = 'joburl')
+df_data_analyst = df_data_analyst.merge(da_df2, how ='inner', left_on = ['RequestedUrl'],right_on = ['joburl'])
 df_data_analyst = df_data_analyst[['CompanyName', 'company_starRating', 'CompanyOfferedRole','salary','CompanyRoleLocation', 'ListingJobDesc', 'RequestedUrl', 'YearFounded','CompanySize', 'CompanyIndustry', 'CompanyType', 'CompanySector','CompanyRevenue']]
 
-df_data_scientist = df_data_scientist.merge(da_df2, how ='left', left_on = 'RequestedUrl',right_on = 'joburl')
+df_data_scientist = df_data_scientist.merge(da_df2, how ='inner', left_on = ['RequestedUrl'],right_on = ['joburl'])
 df_data_scientist = df_data_scientist[['CompanyName', 'company_starRating', 'CompanyOfferedRole','salary','CompanyRoleLocation', 'ListingJobDesc', 'RequestedUrl', 'YearFounded','CompanySize', 'CompanyIndustry', 'CompanyType', 'CompanySector','CompanyRevenue']]
 
-df_business_intelligence_analyst = df_business_intelligence_analyst.merge(da_df2, how ='left', left_on = 'RequestedUrl',right_on = 'joburl')
+df_business_intelligence_analyst = df_business_intelligence_analyst.merge(da_df2, how ='inner', left_on = ['RequestedUrl'],right_on = ['joburl'])
 df_business_intelligence_analyst = df_business_intelligence_analyst[['CompanyName', 'company_starRating', 'CompanyOfferedRole','salary','CompanyRoleLocation', 'ListingJobDesc', 'RequestedUrl', 'YearFounded','CompanySize', 'CompanyIndustry', 'CompanyType', 'CompanySector','CompanyRevenue']]
-
-
 
 #export the data 
 df_data_analyst.to_csv('/Users/lavine/Documents/Terriers!/github/job_analysis_project/data/df_data_analyst.csv', index=False)
