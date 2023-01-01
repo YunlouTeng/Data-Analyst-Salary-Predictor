@@ -5,6 +5,7 @@ Created on Fri Dec 30 15:24:06 2022
 
 @author: lavine
 """
+import time
 #web scraping
 from urllib.request import urlopen, Request
 from urllib.parse import urlparse
@@ -145,15 +146,17 @@ def extract_listing(url):
         company_buttom = driver.find_element_by_xpath('//div[@data-tab-type="overview"]')
         company_buttom.click()
         selenium_success = True
+        time.sleep(2)
         
     except Exception as e:
-        print("[ERROR] Error occurred in company information extracting, requested url: {} is unavailable.".format(url))
+        #print("[ERROR] Error occurred in company information extracting, requested url: {} is unavailable.".format(url))
         year_founded = 'NA'
         company_size = 'NA'
         company_industry = 'NA'
         company_type = 'NA'
         company_sector = 'NA'
         company_revenue = 'NA'
+        time.sleep(5)
         
     if selenium_success:
         #get year_founded
