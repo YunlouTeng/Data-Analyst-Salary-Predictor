@@ -197,6 +197,8 @@ data['JobSimp'] = data['JobTitle'].apply(title_simplifier)
 
 #expot data 
 
+data.reset_index(drop=True, inplace=True)
+
 data.to_csv('data cleaning/data for downstream/cdata_for_sp.csv')
 
 
