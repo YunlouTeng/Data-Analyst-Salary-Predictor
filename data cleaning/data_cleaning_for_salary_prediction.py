@@ -32,9 +32,9 @@ def get_hourly_salary(x):
 
 """## 2. Import and intergrate the data """
 
-da = pd.read_csv('data cleaning/data from upstream/df_data_analyst.csv')
-ds = pd.read_csv('data cleaning/data from upstream/df_data_scientist.csv')
-bia = pd.read_csv('data cleaning/data from upstream/df_business_intelligence_analyst.csv')
+da = pd.read_csv('data collection/data for downstream/df_data_analyst.csv')
+ds = pd.read_csv('data collection/data for downstream/df_data_scientist.csv')
+bia = pd.read_csv('data collection/data for downstream/df_business_intelligence_analyst.csv')
 
 #tag each table with job types(search key words)
 da['JobType'] = 'data analyst'
@@ -51,6 +51,12 @@ data.reset_index(drop = True, inplace = True)
 
 data.dropna(subset=['YearFounded','CompanyIndustry','CompanyName'], inplace= True)
 data.drop_duplicates(subset=['CompanyName','JobTitle','Salary','OfficeLocation'],inplace= True)
+
+
+data = data[data['CompanySize'] != 'Unknown']
+data = data[data['CompanyType'] != 'Unknown']
+data = data[data['CompanyRevenue'] != 'Unknown / Non-Applicable']
+
 data.reset_index(drop = True, inplace= True)
 
 """## 3. Data dimensions overview"""
@@ -120,17 +126,19 @@ data['OfficeLocation'] = data['OfficeLocation'].map(lambda x: 'New York, NY' if 
 
 #pd.set_option('display.max_colwidth', 50)
 
-data = data[data['OfficeLocation'] != 'United States']
-data = data[data['OfficeLocation'] != 'Township of Hamilton']
-data.loc[1426,['OfficeLocation']] = 'Olympia, WA'
-data.loc[785,['OfficeLocation']] = 'Bellevue, WA'
-data.loc[138,['OfficeLocation']] = 'Boston, MA'
-data.loc[1425,['OfficeLocation']] = 'Seattle, WA'
-data.loc[1386,['OfficeLocation']] = 'Redondo Beach, CA'
+data = data[data.OfficeLocation.str.contains(',')]
 
 #separte the cities and states
 data['OfficeCity'] = data['OfficeLocation'].map(lambda x: x.split(",")[0])
 data['OfficeState'] = data['OfficeLocation'].map(lambda x: x.split(",")[1])
+data['OfficeState'] = data['OfficeState'].map(lambda x: x.strip())
+
+state_list = ['WA','GA','MA','IL','CA','NY','NJ']
+
+data = data[data.OfficeState.isin(state_list)]
+
+data.reset_index(drop = True, inplace = True)
+
 
 """##Company Age"""
 
@@ -169,30 +177,13 @@ data.Spark.value_counts()
 """##Job"""
 
 def seniority(title):
-    if 'sr' in title.lower() or 'senior' in title.lower() or 'sr' in title.lower() or 'lead' in title.lower() or 'principal' in title.lower():
+    if 'sr.' in title.lower().strip() or '3' in title.lower().strip() or '2' in title.lower().strip() or 'II' in title.lower().strip() or 'III' in title.lower().strip() or 'senior' in title.lower().strip() or 'sr' in title.lower().strip() or 'lead' in title.lower().strip() or 'principal' in title.lower().strip():
             return 'senior'
-    elif 'jr' in title.lower() or 'jr.' in title.lower():
-        return 'jr'
     else:
-        return 'na'
+        return 'junior'
 
-def title_simplifier(title):
-    if 'data scientist' in title.lower():
-        return 'data scientist'
-    elif 'data engineer' in title.lower():
-        return 'data engineer'
-    elif 'analyst' in title.lower():
-        return 'analyst'
-    elif 'machine learning' in title.lower():
-        return 'mle'
-    elif 'manager' in title.lower():
-        return 'manager'
-    elif 'director' in title.lower():
-        return 'director'
-    else:
-        return 'na'
 
-data['JobSimp'] = data['JobTitle'].apply(title_simplifier)
+data['JobSeniority'] = data['JobTitle'].apply(seniority)
 
 
 #expot data 
