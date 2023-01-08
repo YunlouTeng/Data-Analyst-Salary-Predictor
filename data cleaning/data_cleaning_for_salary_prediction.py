@@ -36,10 +36,6 @@ da = pd.read_csv('data collection/data for downstream/df_data_analyst.csv')
 ds = pd.read_csv('data collection/data for downstream/df_data_scientist.csv')
 bia = pd.read_csv('data collection/data for downstream/df_business_intelligence_analyst.csv')
 
-#tag each table with job types(search key words)
-da['JobType'] = 'data analyst'
-ds['JobType'] = 'data scientist'
-bia['JobType'] = 'business intelligence analyst'
 
 #combine the tables
 data = pd.concat([da,ds,bia])
@@ -182,22 +178,31 @@ def seniority(title):
     else:
         return 'junior'
 
+def title_simplifier(title):
+
+    if 'scientist' in title.lower().strip():
+        return 'data scientist'
+    elif 'engineer' in title.lower().strip():
+        return 'data engineer'
+    elif 'business' in title.lower().strip():
+        return 'business analyst'
+    elif 'machine learning' in title.lower().strip():
+        return 'mle'
+    elif 'manager' in title.lower().strip():
+        return 'manager'
+    elif 'director' in title.lower().strip():
+        return 'director'
+    else:
+        return 'data analyst'
 
 data['JobSeniority'] = data['JobTitle'].apply(seniority)
-
+data['JobSimp'] = data['JobTitle'].apply(title_simplifier)
 
 #expot data 
 
 data.reset_index(drop=True, inplace=True)
 
 data.to_csv('data cleaning/data for downstream/cdata_for_sp.csv')
-
-
-
-
-
-
-
 
 
 

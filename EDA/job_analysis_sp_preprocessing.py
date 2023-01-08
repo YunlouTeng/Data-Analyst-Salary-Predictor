@@ -61,8 +61,6 @@ data_scaled.head()
 
 df_final = pd.concat([data_scaled, data_final], axis=1)
 
-#model
-df_final.to_csv('data cleaning/data for downstream/forautoml.csv',index=False)
 
 
 

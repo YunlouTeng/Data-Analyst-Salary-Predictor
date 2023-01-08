@@ -34,9 +34,9 @@ def get_hourly_salary(x):
 
 """## 2. Import and intergrate the data """
 
-da = pd.read_csv('data cleaning/data from upstream/df_data_analyst.csv')
-ds = pd.read_csv('data cleaning/data from upstream/df_data_scientist.csv')
-bia = pd.read_csv('data cleaning/data from upstream/df_business_intelligence_analyst.csv')
+da = pd.read_csv('data collection/data for downstream/df_data_analyst.csv')
+ds = pd.read_csv('data collection/data for downstream/df_data_scientist.csv')
+bia = pd.read_csv('data collection/data for downstream/df_business_intelligence_analyst.csv')
 
 #tag each table with job types(search key words)
 da['JobType'] = 'data analyst'
@@ -96,6 +96,8 @@ max_salary_median_imputer = SimpleImputer(missing_values=np.nan, strategy='media
 max_salary_median_imputer = max_salary_median_imputer.fit(data[['MaxSalary']])
 data['MaxSalary'] = max_salary_median_imputer.transform(data[['MaxSalary']])
 
+data['AvgSalary'] = (data.MaxSalary + data.MinSalary) / 2
+
 """*future work: based on the keyword or the topic of the job description, using regression method to fill the missing value*
 
 ## 5. Clean CompanyRating
@@ -112,74 +114,37 @@ pd.set_option('display.max_colwidth', 50)
 data.dropna(subset=['CompanyName', 'JobTitle','OfficeLocation'], inplace = True)
 
 #find locations that dont have the same styles as the majority
+"""##6. Clean OfficeLocation
+
+"""
+
+#find locations that dont have the same styles as the majority
 data.OfficeLocation[~data.OfficeLocation.str.contains(',')].value_counts()
 
-data['OfficeLocation'] = data['OfficeLocation'].map(lambda x: 'New York, NY' if str(x) == 'Manhattan' else str(x))
-
 data['OfficeLocation'] = data['OfficeLocation'].map(lambda x: 'Atlanta, GA' if str(x) == 'Division of Intuit' else str(x))
-
 data['OfficeLocation'] = data['OfficeLocation'].map(lambda x: 'New York, NY' if str(x) == 'Long Island-Queens' else str(x))
 data['OfficeLocation'] = data['OfficeLocation'].map(lambda x: 'New York, NY' if str(x) == 'Midtown New York' else str(x))
 data['OfficeLocation'] = data['OfficeLocation'].map(lambda x: 'New York, NY' if str(x) == 'New York State' else str(x))
 data['OfficeLocation'] = data['OfficeLocation'].map(lambda x: 'New York, NY' if str(x) == 'Queen Anne' else str(x))
 data['OfficeLocation'] = data['OfficeLocation'].map(lambda x: 'New York, NY' if str(x) == 'Manhattanville' else str(x))
-
 data['OfficeLocation'] = data['OfficeLocation'].map(lambda x: 'Los Angeles, CA' if str(x) == 'California' else str(x))
+data['OfficeLocation'] = data['OfficeLocation'].map(lambda x: 'New York, NY' if str(x) == 'Manhattan' else str(x))
 
-data[data['CompanyName'] == 'Washington State Department of Transportation'][data['JobTitle'] == 'IT Business Analyst – Senior Specialist (Project)']['OfficeLocation']
+#pd.set_option('display.max_colwidth', 50)
 
-#data[data['CompanyName'] == 'UnitedHealthcare'][data['JobTitle'] == 'Data Analyst Remote']['OfficeLocation'] = 'Boston, MA'
-data.loc[195,['OfficeLocation']] = 'Boston, MA'
-
-#data[data['CompanyName'] == 'Optum'][data['JobTitle'] == 'Sr Applied Scientist - Machine Learning - Telecommute']['OfficeLocation'] = 'Bellevue, WA'
-data.loc[1134,['OfficeLocation']] = 'Bellevue, WA'
-
-#data[data['CompanyName'] == 'Washington State Department of Transportation'][data['JobTitle'] == 'IT Business Analyst – Senior Specialist (Project)']['OfficeLocation'] = 'Olympia, WA'
-data.loc[467,['OfficeLocation']] = 'Olympia, WA'
-
-data = data[data['OfficeLocation'] != 'United States']
-data = data[data['OfficeLocation'] != 'Township of Hamilton']
-
-data.loc[515,['OfficeLocation']] = 'Seattle, WA'
-
-data.loc[1905,['OfficeLocation']] = 'Redondo Beach, CA'
+data = data[data.OfficeLocation.str.contains(',')]
 
 #separte the cities and states
 data['OfficeCity'] = data['OfficeLocation'].map(lambda x: x.split(",")[0])
 data['OfficeState'] = data['OfficeLocation'].map(lambda x: x.split(",")[1])
+data['OfficeState'] = data['OfficeState'].map(lambda x: x.strip())
 
-data.head()
+state_list = ['WA','GA','MA','IL','CA','NY','NJ']
 
-"""##7. Clean Company Size"""
+data = data[data.OfficeState.isin(state_list)]
 
-data.CompanySize = data.CompanySize.map(lambda x: 'Unknown' if str(x) == 'nan' else x)
+data.reset_index(drop = True, inplace = True)
 
-data.CompanySize.value_counts(dropna = False)
-
-"""##8. Clean Companytype"""
-
-data.CompanyType = data.CompanyType.map(lambda x: 'Unknown' if str(x) == 'nan' else x)
-
-data.CompanyType.value_counts(dropna=False)
-
-"""##9. Clean CompanyRevenue"""
-
-data.CompanyRevenue = data.CompanyRevenue.map(lambda x: 'Unknown' if str(x) == 'nan' or str(x) == 'Unknown / Non-Applicable' else x)
-
-data.CompanyRevenue.value_counts(dropna=False)
-
-"""##10. Clean CompanyIndustry and CompanySector"""
-
-data.CompanyIndustry = data.CompanyIndustry.map(lambda x: 'Unknown' if str(x) == 'nan' else x)
-data.CompanyIndustry.value_counts(dropna=False)
-
-data.CompanySector = data.CompanySector.map(lambda x: 'Unknown' if str(x) == 'nan' else x)
-data.CompanySector.value_counts(dropna=False)
-
-"""##11. Clean YearFounded"""
-
-data.YearFounded = data.YearFounded.map(lambda x: 'Unknown' if str(x) == 'nan' else x)
-data.YearFounded.value_counts(dropna=False)
 
 """##12. Clean Job description"""
 
