@@ -30,6 +30,15 @@ def get_hourly_salary(x):
     return float(x)
   return None
 
+
+def convert_monthly_to_yearly(x):
+    if x is not None:
+        if x < 8:
+            x = x * 12
+        else: x
+        return x
+    return None
+        
 """## 2. Import and intergrate the data """
 
 da = pd.read_csv('data collection/data for downstream/df_data_analyst.csv')
@@ -80,9 +89,16 @@ data['MaxSalary'] = data['Salary'].map(lambda x: x.split("-")[1] if len(x.split(
 #working hours: 1800hrs per year
 #70 * 1000 /1800
 
-data.MinSalary = data.MinSalary.map(lambda x: get_hourly_salary(x))
 
+
+data.MinSalary = data.MinSalary.map(lambda x: get_hourly_salary(x))
 data.MaxSalary = data.MaxSalary.map(lambda x: get_hourly_salary(x))
+
+
+### some job posts provided monthly salary, and we need to convert it to yearly salary
+data.MinSalary = data.MinSalary.map(lambda x: convert_monthly_to_yearly(x))
+
+data.MaxSalary = data.MaxSalary.map(lambda x: convert_monthly_to_yearly(x))
 
 #filling missing value by median
 min_salary_median_imputer = SimpleImputer(missing_values=np.nan, strategy='median')
