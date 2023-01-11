@@ -1,17 +1,18 @@
 ## Data Science Salary Predictor: Project Overview
-* **Goal**: Developing a salary predictor for positions within the field of data science, with the aim of providing job seekers with an informed understanding of the current job market landscape. This will enable them to make more informed decisions regarding their career paths and salary expectations.
+* **Goal**: Creating a salary predictor for data science positions to help job seekers understand the job market and make informed career and salary decisions.
 
 * **Impact**
 
 * **Challenges**
-  * The data quality: This project was faced with the challenge of data scraping, as access to Glassdoor API was not available. Consequently, most present web data had to be scraped manually, resulting in 10,000 pieces of data being collected. After data cleaning, only 1,200 pieces of data remained.
-  * The credibility of the Salary data: 
+  * This project was faced with the challenge of data scraping, as access to Glassdoor API was not available. To collect the most current and fresh data, web scraping techniques using Python were employed, yielding a total of 10,000 pieces of data. However, after data cleaning, only 1,200 pieces of data remained for analysis.
+  
+  * As the target variable of the regression model, salary data was obtained from the Glassdoor website. However, it should be noted that some of the salary data is estimated by the employer, while some is estimated by Glassdoor. As a result, there may be an issue with potential overestimation of salary data.
 
 * **Interesting findings**
 
-2. Location is an important factor in determining salary for both data scientists and data analysts, with cities such as San Francisco, New York, and Seattle offering the highest salaries.
+  * Location is an important factor in determining salary for both data scientists and data analysts, with cities such as San Francisco, New York, and Seattle offering the highest salaries.
 
-3. Experience is also a key factor in predicting salary for both data scientists and data analysts, with more experienced professionals earning higher salaries.
+  * Experience is also a key factor in predicting salary for both data scientists and data analysts, with more experienced professionals earning higher salaries.
 
 
 ## Code and Resources Used
