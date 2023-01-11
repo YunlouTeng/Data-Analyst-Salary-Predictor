@@ -4,7 +4,7 @@
 * **Impact**
 
 * **Challenges**
-  * This project was faced with the challenge of data scraping, as access to Glassdoor API was not available. To collect the most current and fresh data, web scraping techniques using Python were employed, yielding a total of 10,000 pieces of data. However, after data cleaning, only 1,200 pieces of data remained for analysis.
+  * To collect the most current and fresh data, web scraping techniques using Python were employed, yielding a total of 10,000 pieces of data. However, after data cleaning, only 1,200 pieces of data remained for analysis.
   
   * As the target variable of the regression model, salary data was obtained from the Glassdoor website. However, it should be noted that some of the salary data is estimated by the employer, while some is estimated by Glassdoor. As a result, there may be an issue with potential overestimation of salary data.
 
