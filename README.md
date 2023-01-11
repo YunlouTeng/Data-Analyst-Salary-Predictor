@@ -1,4 +1,4 @@
-## Data Science Salary Predictor: Project Overview
+## Data Analyst Salary Predictor: Project Overview
 * **Goal**: Creating a salary predictor for data science positions to help job seekers understand the job market and make informed career and salary decisions.
 
 * **Impact**: Lower the RMSE from 0.8 to 0.4 by ensemble methods.
