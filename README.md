@@ -21,7 +21,7 @@
 
 **Modules** numpy, pandas, sklearn, matplotlib, seaborn, urllib, beautifulsoup, selenium
 
-**Scraper Github**: 
+**Scraper Github**: https://github.com/kelvinxuande/glassdoor-scraper
 
 ## Project Summary
 
