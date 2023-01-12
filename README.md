@@ -11,6 +11,10 @@
 * **Interesting findings**:
 
   * Location is an important factor in determining salary for both data scientists and data analysts, with cities such as San Francisco, New York, and Seattle offering the highest salaries.
+  
+  * The demand for data scientists and analysts is highest in industries such as technology, finance, and healthcare. Professionals working in these industries can expect to earn higher salaries than those in other industries.
+  
+  * Remote working has a positive impact on the salaries of data scientists and analysts as well, especially for those who are located in higher cost-of-living areas, because they can work remotely in lower cost-of-living areas, where salaries are lower.
 
   * Experience is also a key factor in predicting salary for both data scientists and data analysts, with more experienced professionals earning higher salaries.
 
