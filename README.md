@@ -21,7 +21,7 @@
 * **Future work**: Building a client facing API using flask, and intergrate this salary prediction model into [my cover letter generator website](https://yunlouteng-cover-letter-hero.streamlit.app) as a fun feature
 
 ## Code and Resources Used
-**Python Version** 3.7
+**Python Version** 3.8
 
 **Modules** numpy, pandas, sklearn, matplotlib, seaborn, urllib, beautifulsoup, selenium
 
