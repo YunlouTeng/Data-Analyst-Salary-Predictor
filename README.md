@@ -26,9 +26,3 @@
 **Modules** numpy, pandas, sklearn, matplotlib, seaborn, urllib, beautifulsoup, selenium
 
 **Scraper Github**: https://github.com/kelvinxuande/glassdoor-scraper
-
-## Project Summary
-
-1.Scraped over 1000 job post data from glassdoor using beautifulsoup and selenium modules in python
-2.Feature engineered from the job description text data to distill and quantify 
-
